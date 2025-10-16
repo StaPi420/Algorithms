@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Numerics;
 
 class Program
-{   
+{
     static void moveColumns(int[][] matrix, int column, int cntColumns)
     {
-        for (int i = 0; i < cntColumns - 1; ++i)
+        for (int i = column; i < cntColumns - 1; ++i)
         {
             matrix[i] = matrix[i + 1];
         }
@@ -38,7 +38,7 @@ class Program
 
         int cntColumns = n;
 
-        for (int i = 0; i < n;)
+        for (int i = 0; i < cntColumns;)
         {
             int cntOdd = 0;
             for (int j = 0; j < n; ++j)
@@ -57,7 +57,7 @@ class Program
         }
 
 
-        if (cntColumns > 0)
+        //if (cntColumns > 0)
             for (int i = 0; i < n; ++i)
             {
                 for (int j = 0; j < cntColumns; ++j)
