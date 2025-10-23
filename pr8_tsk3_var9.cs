@@ -1,15 +1,31 @@
-﻿using System;
+using System;
+using System.IO;
+using System.Text;
+
 class Program
-{   
+{
     static void Main()
     {
-        Console.Write("Введите строку: ");
-        String str = Console.ReadLine();
+        String file = "C:\\Users\\contest\\source\\repos\\ConsoleApp1\\ConsoleApp1\\cap.txt";
 
-        Console.Write("Введите подстроку: ");
-        String substr = Console.ReadLine();
+        String str = File.ReadAllText(file);
 
-        int res = str.Split(substr).Length - 1;
+        Console.Write("Введите слово: ");
+        String substr = Console.ReadLine().ToLower();
+
+        char[] separator = { ' ', '.', ',', '!', '?', ';', ':', '\n', '\t', '\r' };
+
+        String[] words = str.Split(separator);
+
+        int res = 0;
+
+        foreach(String word in words)
+        {
+            if (substr.Equals(word.ToLower()))
+            {
+                ++res;
+            }
+        }
 
         Console.WriteLine(res);
     }
