@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.IO;
 
@@ -6,20 +6,37 @@ class Program
 {
     static void Main()
     {
-        string fileInPath1 = "C:\\Users\\kuram\\.vscode\\csproj\\fileIn1.txt";
-        string fileInPath2 = "C:\\Users\\kuram\\.vscode\\csproj\\fileIn2.txt";
-        string fileOutPath = "C:\\Users\\kuram\\.vscode\\csproj\\fileOut.txt";
+        string fileInPath1 = "C:\\Users\\contest\\Desktop\\fileIn1.txt";
+        string fileInPath2 = "C:\\Users\\contest\\Desktop\\fileIn2.txt";
+        string fileOutPath = "C:\\Users\\contest\\Desktop\\fileOut.txt";
 
-        string[] fileIn1 = File.ReadAllLines(fileInPath1);
-        string[] fileIn2 = File.ReadAllLines(fileInPath2);
+        StreamReader reader1 = new StreamReader(fileInPath1);
+        StreamReader reader2 = new StreamReader(fileInPath2);
+
+        char[] separator = { ' ', '.', ',', '!', '?', ';', ':', '\n', '\t', '\r', '\v' };
+
+        string[] fileIn1 = reader1.ReadToEnd().Split(separator);
+        string[] fileIn2 = reader2.ReadToEnd().Split(separator);
 
         File.Create(fileOutPath).Close();
-        
+
+        foreach (string s in fileIn1)
+        {
+            Console.Write(s.Trim() + ' ');
+        }
+        Console.WriteLine();
+        foreach (string s in fileIn2)
+        {
+            Console.Write(s.Trim() + ' ');
+        }
 
         for (int i = 0; i < Math.Min(fileIn1.Length, fileIn2.Length); ++i)
         {
-            File.AppendAllText(fileOutPath, fileIn1[i] + '\n');
-            File.AppendAllText(fileOutPath, fileIn2[i] + '\n');
+            if (!fileIn1[i].Equals("") && !fileIn2[i].Equals(""))
+            {
+                File.AppendAllText(fileOutPath, fileIn1[i].Trim() + '\n');
+                File.AppendAllText(fileOutPath, fileIn2[i].Trim() + '\n');
+            }
         }
     }
 }
