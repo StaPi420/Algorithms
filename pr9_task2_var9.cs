@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using System.IO;
 
 class Program
@@ -24,7 +23,6 @@ class Program
         {
             Console.Write(s.Trim() + ' ');
         }
-        Console.WriteLine();
         foreach (string s in fileIn2)
         {
             Console.Write(s.Trim() + ' ');
@@ -32,7 +30,7 @@ class Program
 
         for (int i = 0; i < Math.Min(fileIn1.Length, fileIn2.Length); ++i)
         {
-            if (!fileIn1[i].Equals("") && !fileIn2[i].Equals(""))
+            if (!fileIn1[i].Equals("") || !fileIn2[i].Equals(""))
             {
                 File.AppendAllText(fileOutPath, fileIn1[i].Trim() + '\n');
                 File.AppendAllText(fileOutPath, fileIn2[i].Trim() + '\n');
