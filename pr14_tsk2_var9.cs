@@ -1,19 +1,18 @@
 using System;
-using System.Text;
 using System.IO;
-using System.Collections.Generic;
 
 class Program
 {
     static void Main()
     {
-        using (StreamReader reader =  new StreamReader("C:\\Users\\kuram\\.vscode\\csproj\\fileIn2.txt"))
+        using (StreamReader reader = new StreamReader("C:\\Users\\contest\\fileIn2.txt"))
         {
             int n = int.Parse(reader.ReadLine());
             Student[] studentArray = new Student[n];
+            char[] sep = { ' ' };
             for (int i = 0; i < n; ++i)
             {
-                string[] studentLine = reader.ReadLine().Split(' ');
+                string[] studentLine = reader.ReadLine().Split(sep, StringSplitOptions.RemoveEmptyEntries);
                 studentArray[i] = new Student(studentLine[0],
                                             studentLine[1],
                                             int.Parse(studentLine[2]),
@@ -23,18 +22,20 @@ class Program
                                             int.Parse(studentLine[6]),
                                             int.Parse(studentLine[7]),
                                             int.Parse(studentLine[8]));
-                Array.Sort(studentArray);
-                using (StreamWriter writer = new StreamWriter("C:\\Users\\kuram\\.vscode\\csproj\\fileOut.txt"))
+            }
+            Array.Sort(studentArray);
+            using (StreamWriter writer = new StreamWriter("C:\\Users\\contest\\fileOut.txt"))
+            {
+                foreach (Student student in studentArray)
                 {
-                    foreach (Student student in studentArray)
-                    {
-                        if (student.has2Grade())
-                        {
-                            writer.WriteLine($"{student.name} {student.faculty} {student.course} {student.group} {student.firstGrade} {student.secondGrade} {student.thirdGrade} {student.fourthGrade} {student.fifthGrade}");
-                        }
-                    }
+                   Console.WriteLine($"{student.name} {student.faculty} {student.course} {student.group} {student.firstGrade} {student.secondGrade} {student.thirdGrade} {student.fourthGrade} {student.fifthGrade}");
+                   if (student.has2Grade())
+                   {
+                       writer.WriteLine($"{student.name} {student.faculty} {student.course} {student.group} {student.firstGrade} {student.secondGrade} {student.thirdGrade} {student.fourthGrade} {student.fifthGrade}");
+                   }
                 }
             }
+            
         }
     }
 }
