@@ -6,13 +6,14 @@ class Program
 {
     static void Main()
     {
-        using (StreamReader reader = new StreamReader("C:\\Users\\contest\\fileIn3.txt"))
+        using (StreamReader reader = new StreamReader("C:\\Users\\kuram\\.vscode\\csproj\\fileIn.txt"))
         {
             int n = int.Parse(reader.ReadLine());
             SPoint[] pointAr = new SPoint[n];
             int[] amount = new int[n];
             for (int i = 0; i < n; ++i)
             {
+                pointAr[i] = new SPoint();
                 string[] line = reader.ReadLine().Split(' ');
                 //pointAr[i] = new SPoint();
                 pointAr[i].x = int.Parse(line[0]);
@@ -29,10 +30,10 @@ class Program
                         ++amount[i];
                     }
                 }
-                Console.WriteLine(amount[i]);
+                //Console.WriteLine(amount[i]);
                 maxAmount = Math.Max(maxAmount, amount[i]);
             }
-            using (StreamWriter writer = new StreamWriter("C:\\Users\\contest\\fileOut.txt"))
+            using (StreamWriter writer = new StreamWriter("C:\\Users\\kuram\\.vscode\\csproj\\fileOut.txt"))
             {
                 for (int i = 0; i < n; ++i)
                 {
@@ -49,10 +50,10 @@ class Program
 struct SPoint
 {
     public int x, y;
-    public int getDistance(SPoint other)
+    public double getDistance(SPoint other)
     {
-        int xOrt = Math.Abs(this.x * this.x - other.x * other.x);
-        int yOrt = Math.Abs(this.y * this.y - other.y * other.y);
-        return Math.Abs(xOrt + yOrt);
+        int xOrt = Math.Abs(this.x - other.x);
+        int yOrt = Math.Abs(this.y - other.y);
+        return Math.Sqrt(xOrt * xOrt + yOrt * yOrt);
     }
 }
