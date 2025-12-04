@@ -89,19 +89,17 @@ namespace MutableStringClass
         {
             get
             {
-                if (index < 0 || index >= line.Length){
-                    Console.WriteLine("Недопустимый индекс");
-                    return ' ';
+                if (index < 0 || index >= line.Length)
+                {
+                    throw new IndexOutOfRangeException("Индекс вышел за границы строки");
                 }
-                else
-                    return line[index];
+                return line[index];
             }
             set
             {
                 if (index < 0 || index >= line.Length)
-                    Console.WriteLine("Недопустимый индекс");
-                else
-                    line[index] = value;
+                    throw new IndexOutOfRangeException("Индекс вышел за границы строки");
+                line[index] = value;
             }
         }
 
