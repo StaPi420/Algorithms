@@ -5,7 +5,7 @@ class Program
 {
     static void Main()
     {
-        using (StreamReader reader = new StreamReader("C:\\Users\\contest\\fileIn.txt"))
+        using (StreamReader reader = new StreamReader("C:\\Users\\kuramshinrr\\fileIn.txt"))
         {
             char[] sep = { ' ', '.', ',', ';', '\n', '\t', '\r' };
             String[] content = reader.ReadToEnd().Split(sep, StringSplitOptions.RemoveEmptyEntries);
@@ -22,7 +22,7 @@ class Program
                 employees[i].experience = int.Parse(content[7 * i + 6]);
             }
             var ans = employees.GroupBy(employee => employee.position);
-            using (StreamWriter writer = new StreamWriter("C:\\Users\\contest\\fileOut.txt"))
+            using (StreamWriter writer = new StreamWriter("C:\\Users\\kuramshinrr\\fileOut.txt"))
             {
                 foreach (var group in ans)
                 {
