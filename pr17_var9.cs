@@ -89,17 +89,19 @@ namespace MutableStringClass
         {
             get
             {
-                if (index < 0 || index >= line.Length)
-                {
-                    throw new IndexOutOfRangeException("Индекс вышел за границы строки");
+                if (index < 0 || index >= line.Length){
+                    Console.WriteLine("Недопустимый индекс");
+                    return ' ';
                 }
-                return line[index];
+                else
+                    return line[index];
             }
             set
             {
                 if (index < 0 || index >= line.Length)
-                    throw new IndexOutOfRangeException("Индекс вышел за границы строки");
-                line[index] = value;
+                    Console.WriteLine("Недопустимый индекс");
+                else
+                    line[index] = value;
             }
         }
 
@@ -159,6 +161,44 @@ namespace MutableStringClass
         public static explicit operator MutableString(StringBuilder stringBuilder)
         {
             return new MutableString(stringBuilder);
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            using (StreamReader reader = new StreamReader("C:\\Users\\kuram\\.vscode\\csproj\\fileIn.txt"))
+            {
+            using (StreamWriter writer = new StreamWriter("C:\\Users\\kuram\\.vscode\\csproj\\fileOut.txt"))
+            {
+                MutableString mutableString0 = new MutableString();
+                MutableString mutableString1 = new MutableString(reader.ReadLine());
+                MutableString mutableString2 = new MutableString(mutableString1);
+                writer.WriteLine($"Количество пробелов в mutableString1: {mutableString1.CountSpaces()}");
+                mutableString1.ReplaceUpperToLower();
+                writer.WriteLine($"mutableString1 строчными буквами: {mutableString1}");
+                writer.WriteLine(mutableString1.GetHashCode());
+                writer.WriteLine($"mutableString1 равен mutableString2: {mutableString1.Equals(mutableString2)}");
+                writer.WriteLine(mutableString1.GetType());
+                writer.WriteLine($"Использование свойства Line: {mutableString1.Line}");
+                writer.WriteLine($"Использование свойства Length: {mutableString1.Length}");
+                writer.WriteLine($"Использование индексов:");
+                for (int i = 0; i < mutableString1.Length; ++i)
+                {
+                    writer.WriteLine(mutableString1[i]);
+                }
+                writer.WriteLine($"Использование унарного +: {+mutableString2}");
+                writer.WriteLine($"Использованре унарного -: {-mutableString2}");
+                if (mutableString1)
+                {
+                    writer.WriteLine("mutableString1 не пустая");
+                }
+                writer.WriteLine($"mutableString1 и mutableString2 равны: {mutableString1 & mutableString2}");
+                writer.WriteLine((StringBuilder)mutableString1);
+                writer.WriteLine((MutableString)new StringBuilder("слово"));
+            }
+            }
         }
     }
 }
