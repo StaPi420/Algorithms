@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -69,15 +70,37 @@ namespace ConsoleApp1
             }
             return ans;
         }
-        public int MoveTemp()
+        public int DeleteIfEqual(int x)
         {
             if (temp == null && head != null)
             {
                 temp = head;
+                if (head.Inf == x)
+                {
+                    temp = head.Next;
+                    head = temp;
+                }
+            }
+            else if (temp.Next == tail)
+            {
+                if (tail.Inf == x)
+                {
+                    tail = temp;
+                }
+                else
+                {
+                    temp = tail;
+                }
             }
             else if (temp != null && temp.Next != null)
             {
-                temp = temp.Next;
+                if (temp.Next.Inf == x)
+                {
+                    temp.Next = temp.Next.Next;
+                    temp = temp.Next;
+                }
+                else
+                    temp = temp.Next;
             }
             else
             {
@@ -85,59 +108,69 @@ namespace ConsoleApp1
             }
             return temp.Inf;
         }
+        public bool tempIsNotNull()
+        {
+            return !(temp.Next is null);
+        }
+        public bool IsEmpty()
+        {
+            return head is null;
+        }
     }
     class Program
     {
         static void Main(string[] args)
         {
+            char[] sep = { ' ', '.', ',', '!', '\n', '\t', '?', ';', ':' };
             MyQueue queue = new MyQueue();
             MyQueue newQueue = new MyQueue();
-            using (StreamReader reader = new StreamReader("C:\\Users\\kuram\\.vscode\\input1.txt"))
+            using (StreamReader reader = new StreamReader("C:\\Users\\kuramshinrr\\Desktop\\input1.txt"))
             {
-                using (StreamWriter writer = new StreamWriter("C:\\Users\\kuram\\.vscode\\output.txt"))
+                using (StreamWriter writer = new StreamWriter("C:\\Users\\kuramshinrr\\Desktop\\output1.txt"))
                 {
                     int maxElem = 0;
-                    for (int i = 0; i < 10; ++i)
+                    string[] input = reader.ReadToEnd().Split(sep, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string s in input)
                     {
-                        int num = int.Parse(reader.ReadLine());
+                        int num = int.Parse(s);
                         writer.Write($"{num} ");
                         maxElem = Math.Max(num, maxElem);
                         queue.Push(num);
                     }
                     writer.WriteLine();
-                    for (int i = 0; i < 10; ++i)
+                    int a = queue.DeleteIfEqual(maxElem);
+                    writer.Write(a + " ");
+                    while (queue.tempIsNotNull())
                     {
-                        int elem = queue.Pop();
-                        if (elem != maxElem)
-                        {
-                            newQueue.Push(elem);
-                            writer.Write($"{elem} ");
-                        }
+                        a = queue.DeleteIfEqual(maxElem);
+                        writer.Write(a + " ");
                     }
+
                     writer.WriteLine();
                 }
             }
-            using (StreamReader reader = new StreamReader("C:\\Users\\kuram\\.vscode\\input2.txt"))
+            MyQueue queue2 = new MyQueue();
+            MyQueue newQueue2 = new MyQueue();
+            using (StreamReader reader = new StreamReader("C:\\Users\\kuramshinrr\\Desktop\\input2.txt"))
             {
-                using (StreamWriter writer = new StreamWriter("C:\\Users\\kuram\\.vscode\\output2.txt"))
+                using (StreamWriter writer = new StreamWriter("C:\\Users\\kuramshinrr\\Desktop\\output2.txt"))
                 {
                     int maxElem = 0;
-                    for (int i = 0; i < 100; ++i)
+                    string[] input = reader.ReadToEnd().Split(sep, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string s in input)
                     {
-                        int num = int.Parse(reader.ReadLine());
+                        int num = int.Parse(s);
                         writer.Write($"{num} ");
                         maxElem = Math.Max(num, maxElem);
-                        queue.Push(num);
+                        queue2.Push(num);
                     }
                     writer.WriteLine();
-                    for (int i = 0; i < 100; ++i)
+                    int a = queue2.DeleteIfEqual(maxElem);
+                    writer.Write(a + " ");
+                    while (queue2.tempIsNotNull())
                     {
-                        int elem = queue.Pop();
-                        if (elem != maxElem)
-                        {
-                            newQueue.Push(elem);
-                            writer.Write($"{elem} ");
-                        }
+                        a = queue2.DeleteIfEqual(maxElem);
+                        writer.Write(a + " ");
                     }
                 }
             }
