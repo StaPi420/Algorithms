@@ -70,29 +70,9 @@ namespace ConsoleApp1
             }
             return ans;
         }
-        public int MoveTemp()
-        {
-            if (temp == null && head != null)
-            {
-                temp = head;
-            }
-            else if (temp != null && temp.Next != null)
-            {
-                temp = temp.Next;
-            }
-            else
-            {
-                throw new Exception();
-            }
-            return temp.Inf;
-        }
         public bool IsEmpty()
         {
             return head == null;
-        }
-        public void ResetTemp()
-        {
-            temp = head;
         }
         public void Print(TextWriter writer)
         {
@@ -128,32 +108,17 @@ namespace ConsoleApp1
                 temp = null;
                 return;
             }
-            Node prev = head;
-            Node curr = head.Next;
-            while (curr != null)
+            temp = head;
+            while (temp != null)
             {
-                if (curr.Inf == value)
+                if (temp.Next != null && temp.Next.Inf == value)
                 {
-                    prev.Next = curr.Next;
-                    if (curr == tail) tail = prev;
-                    curr = prev.Next;
+                    temp.Next = temp.Next.Next;
                 }
                 else
                 {
-                    prev = curr;
-                    curr = curr.Next;
+                    temp = temp.Next;
                 }
-            }
-            if (temp != null)
-            {
-                Node p = head;
-                bool found = false;
-                while (p != null)
-                {
-                    if (p == temp) { found = true; break; }
-                    p = p.Next;
-                }
-                if (!found) temp = head;
             }
         }
         public void RemoveAllMax()
@@ -167,14 +132,16 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
+            char[] sep = { ' ', ',', '.', '!', '?', '\n', '\t' };
             MyQueue queue = new MyQueue();
-            using (StreamReader reader = new StreamReader("C:\\Users\\kuram\\.vscode\\input1.txt"))
+            using (StreamReader reader = new StreamReader("C:\\Users\\kuramshinrr\\Desktop\\input1.txt"))
             {
-                using (StreamWriter writer = new StreamWriter("C:\\Users\\kuram\\.vscode\\output.txt"))
+                using (StreamWriter writer = new StreamWriter("C:\\Users\\kuramshinrr\\Desktop\\output.txt"))
                 {
-                    for (int i = 0; i < 10; ++i)
+                    string[] nums = reader.ReadToEnd().Split(sep, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string s in nums)
                     {
-                        int num = int.Parse(reader.ReadLine());
+                        int num = int.Parse(s);
                         writer.Write($"{num} ");
                         queue.Push(num);
                     }
@@ -184,13 +151,14 @@ namespace ConsoleApp1
                 }
             }
             queue = new MyQueue();
-            using (StreamReader reader = new StreamReader("C:\\Users\\kuram\\.vscode\\input2.txt"))
+            using (StreamReader reader = new StreamReader("C:\\Users\\kuramshinrr\\Desktop\\input2.txt"))
             {
-                using (StreamWriter writer = new StreamWriter("C:\\Users\\kuram\\.vscode\\output2.txt"))
+                using (StreamWriter writer = new StreamWriter("C:\\Users\\kuramshinrr\\Desktop\\output2.txt"))
                 {
-                    for (int i = 0; i < 100; ++i)
+                    string[] nums = reader.ReadToEnd().Split(sep, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string s in nums)
                     {
-                        int num = int.Parse(reader.ReadLine());
+                        int num = int.Parse(s);
                         writer.Write($"{num} ");
                         queue.Push(num);
                     }
