@@ -56,11 +56,15 @@ namespace ConsoleApp1
                 Add(valueInf, ref head);
             }
         }
-        public void getAmountOfDescendants(StreamWriter writer)
+        private void dfs(ref Node r, StreamWriter writer)
         {
-            Queue<Node> nodes = new Queue<Node>();
-            nodes.Enqueue(head);
-            while (nodes.Is)
+            writer.WriteLine($"{r.inf} - {r.amountOfDescendant}");
+            if (r.left != null) dfs(ref r.left, writer);
+            if (r.right != null) dfs(ref r.right, writer);
+        }
+        public void writeAmountOfDescendants(StreamWriter writer)
+        {
+            dfs(ref head, writer);
         }
         public int FindMin()
         {
@@ -90,8 +94,7 @@ namespace ConsoleApp1
                         tree.Push(num);
                     }
                     writer.WriteLine();
-                    int min = tree.FindMin();
-                    writer.Write(min);
+                    tree.writeAmountOfDescendants(writer);
                 }
             }
             tree = new BinaryTree();
@@ -107,8 +110,7 @@ namespace ConsoleApp1
                         tree.Push(num);
                     }
                     writer.WriteLine();
-                    int min = tree.FindMin();
-                    writer.Write(min);
+                    tree.writeAmountOfDescendants(writer);
                 }
             }
         }
