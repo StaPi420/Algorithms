@@ -34,7 +34,6 @@ namespace ConsoleApp1
             }
             else
             {
-                r.amountOfDescendant++;
                 if (r.inf > valueInf)
                 {
                     Add(valueInf, ref r.left);
@@ -56,11 +55,18 @@ namespace ConsoleApp1
                 Add(valueInf, ref head);
             }
         }
-        private void dfs(ref Node r, StreamWriter writer)
+        private int dfs(ref Node r, StreamWriter writer)
         {
+            if (r.left != null)
+            {
+                r.amountOfDescendant += dfs(ref r.left, writer) + 1;
+            }
+            if (r.right != null)
+            {
+                r.amountOfDescendant += dfs(ref r.right, writer) + 1;
+            }
             writer.WriteLine($"{r.inf} - {r.amountOfDescendant}");
-            if (r.left != null) dfs(ref r.left, writer);
-            if (r.right != null) dfs(ref r.right, writer);
+            return r.amountOfDescendant;
         }
         public void writeAmountOfDescendants(StreamWriter writer)
         {
