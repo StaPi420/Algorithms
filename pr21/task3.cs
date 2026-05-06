@@ -105,7 +105,7 @@ public class AVLTree
 
     public Node Insert(Node node, int key)
     {
-        Console.WriteLine("Вставляем: " + key);
+        // Console.WriteLine("Вставляем: " + key);
         if (node == null) return new Node(key);
 
         if (key < node.Key)
@@ -159,7 +159,7 @@ public class AVLTree
         if (node == null) return true;
 
         int diff = Math.Abs(node.getLeftHeight() - node.getRightHeight());
-        if (diff > 1) return false;
+        if (diff > 0) return false;
 
         return IsPerfectlyBalanced(node.Left) &&
                IsPerfectlyBalanced(node.Right);
@@ -189,7 +189,7 @@ class Program
 {
     static void Main()
     {
-        var numbers = File.ReadAllText("C:\\Users\\kuram\\.vscode\\csproj\\fileIn.txt")
+        var numbers = File.ReadAllText("C:\\Users\\kuram\\.vscode\\csproj\\ConsoleApp2\\input.txt")
                           .Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                           .Select(int.Parse)
                           .ToList();
