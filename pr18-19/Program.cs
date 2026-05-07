@@ -1,49 +1,53 @@
 using System;
-using System.Collections;
-using System.Collections.Immutable;
+using System.Collections.Generic;
+using System.IO;
 using System.ComponentModel;
-using System.Text.Json;
 using ConsoleApp2;
+using System.Linq;
 
 class Program
 {
     private static Random random = new Random();
-    private static string filePath = "data.json";
+    private static string filePath = "C:\\Users\\contest\\source\\repos\\ConsoleApp3\\data.txt";
 
     public static void Save(Vehicle[] vehicles)
     {
         var lines = new List<string>();
-    
+
         foreach (var v in vehicles)
         {
             if (v is Car car)
             {
-                lines.Add($"Car;{car.Brand};{car.Number};{car.Speed};{car.LiftingCapacity}");
+                lines.Add($"Car;{car.Brand};{car.CarNumber};{car.Speed};{car.LiftingCapacity}");
             }
             else if (v is Motorcycle m)
             {
-                lines.Add($"Motorcycle;{m.Brand};{m.Number};{m.Speed};{m.LiftingCapacity};{m.HasSidecar}");
+                lines.Add($"Motorcycle;{m.Brand};{m.CarNumber};{m.Speed};{m.LiftingCapacity};{m.HasSidecar}");
             }
             else if (v is Truck t)
             {
-                lines.Add($"Truck;{t.Brand};{t.Number};{t.Speed};{t.LiftingCapacity};{t.HasTrailer}");
+                lines.Add($"Truck;{t.Brand};{t.CarNumber};{t.Speed};{t.LiftingCapacity};{t.HasTrailer}");
             }
         }
-    
+
         File.WriteAllLines(filePath, lines);
     }
     public static Vehicle[] GetAll()
     {
         if (!File.Exists(filePath))
-            return Array.Empty<Vehicle>();
-    
+            GenerateFile();
+
         var lines = File.ReadAllLines(filePath);
+        if (lines.Length == 0)
+        {
+            GenerateFile();
+        }
         var vehicles = new List<Vehicle>();
-    
+
         foreach (var line in lines)
         {
             var parts = line.Split(';');
-    
+
             switch (parts[0])
             {
                 case "Car":
@@ -54,7 +58,7 @@ class Program
                         int.Parse(parts[4])
                     ));
                     break;
-    
+
                 case "Motorcycle":
                     vehicles.Add(new Motorcycle(
                         parts[1],
@@ -64,7 +68,7 @@ class Program
                         bool.Parse(parts[5])
                     ));
                     break;
-    
+
                 case "Truck":
                     vehicles.Add(new Truck(
                         parts[1],
@@ -82,16 +86,16 @@ class Program
     public static void GenerateFile()
     {
         Vehicle[] vehicles = new Vehicle[100];
-    
+
         for (int i = 0; i < 34; ++i)
             vehicles[i] = new Car(GetRandomBrand(), GetRandomNumber(), random.Next(100, 200), random.Next(0, 2000));
-    
+
         for (int i = 34; i < 67; ++i)
             vehicles[i] = new Motorcycle(GetRandomBrand(), GetRandomNumber(), random.Next(100, 200), random.Next(0, 1000), random.Next(2) == 0);
-    
+
         for (int i = 67; i < 100; ++i)
             vehicles[i] = new Truck(GetRandomBrand(), GetRandomNumber(), random.Next(70, 150), random.Next(0, 10000), random.Next(2) == 0);
-    
+
         Save(vehicles);
     }
     public static string GetRandomNumber()
@@ -107,7 +111,7 @@ class Program
     }
     public static void Main()
     {
-        GenerateFile();
+        //GenerateFile();
         var vehicles = GetAll();
         Console.Write("Введите минимальную необходимую грузоподьёмность:");
         int minLiftingCapacity = int.Parse(Console.ReadLine());
