@@ -9,11 +9,20 @@ namespace Example
         private class Node
         {
             private int[,] array;
+            private int[,] coords;
+            public string[] cities;
 
             public int this[int i, int j]
             {
                 get { return array[i, j]; }
                 set { array[i, j] = value; }
+            }
+            public Node(int[,] a, int[,] cords, string[] cities)
+            {
+                array = a;
+                coords = cords;
+                this.cities = cities;
+                nov = new bool[a.GetLength(0)];
             }
 
             public int Size
@@ -23,30 +32,17 @@ namespace Example
 
             private bool[] nov;
 
+            public double GetDistance(int v, int u)
+            {
+                return Math.Sqrt((coords[v, 0] - coords[u, 0]) * (coords[v, 0] - coords[u, 0]) + (coords[v, 1] - coords[u, 1]) * (coords[v, 1] - coords[u, 1]));
+            }
+
             public void NovSet()
             {
                 for (int i = 0; i < Size; i++)
                 {
                     nov[i] = true;
                 }
-            }
-
-            public void AddDirectedEdge(int a, int b, int weight = 1)
-            {
-                if (a < 0 || a >= Size || b < 0 || b >= Size)
-                    throw new ArgumentOutOfRangeException("Вершина выходит за пределы графа");
-                
-                if (weight <= 0)
-                    throw new ArgumentException("Вес дуги должен быть положительным");
-                
-                array[a, b] = weight;
-            }
-            public Node(int[,] a)
-            {
-                if (a == null)
-                    throw new ArgumentNullException(nameof(a));
-                array = a;
-                nov = new bool[a.GetLength(0)];
             }
 
             // Обход в глубину (DFS)
@@ -169,117 +165,14 @@ namespace Example
                 }
             }
 
-            // Алгоритм Флойда
-            public long[,] Floyd(out int[,] p)
-            {
-                int i, j, k;
-                long[,] a = new long[Size, Size];
-                p = new int[Size, Size];
 
-                for (i = 0; i < Size; i++)
-                {
-                    for (j = 0; j < Size; j++)
-                    {
-                        if (i == j)
-                        {
-                            a[i, j] = 0;
-                        }
-                        else if (array[i, j] == 0)
-                        {
-                            a[i, j] = long.MaxValue;
-                        }
-                        else
-                        {
-                            a[i, j] = array[i, j];
-                        }
-                        p[i, j] = -1;
-                    }
-                }
-
-                for (k = 0; k < Size; k++)
-                {
-                    for (i = 0; i < Size; i++)
-                    {
-                        if (a[i, k] == long.MaxValue) continue;
-
-                        for (j = 0; j < Size; j++)
-                        {
-                            if (a[k, j] == long.MaxValue) continue;
-
-                            long distance = a[i, k] + a[k, j];
-                            if (a[i, j] > distance)
-                            {
-                                a[i, j] = distance;
-                                p[i, j] = k;
-                            }
-                        }
-                    }
-                }
-
-                return a;
-            }
-
-            // Восстановление пути для Флойда
-            public void WayFloyd(int a, int b, int[,] p, ref Queue<int> items)
-            {
-                int k = p[a, b];
-                if (k != -1)
-                {
-                    WayFloyd(a, k, p, ref items);
-                    items.Enqueue(k);
-                    WayFloyd(k, b, p, ref items);
-                }
-            }
-            public List<int> GetIncomingVertices(int v)
-            {
-                if (v < 0 || v >= Size)
-                    throw new ArgumentOutOfRangeException(nameof(v));
-
-                List<int> result = new List<int>();
-
-                for (int i = 0; i < Size; i++)
-                {
-                    if (array[i, v] != 0)
-                    {
-                        result.Add(i);
-                    }
-                }
-
-                return result;
-            }
-            public void SearchEuler(int v, ref int[,] a, ref Stack<int> c)
-            {
-                for (int i = 0; i < a.GetLength(0); i++)
-                {
-                    if (a[v, i] != 0)
-                    {
-                        a[v, i] = 0;
-
-                        SearchEuler(i, ref a, ref c);
-                    }
-                }
-
-                c.Push(v);
-            }
-            public long[] DijkstraWithoutVertex(int start, int forbidden, out int[] p)
+            public double[] DijkstraWithoutVertex(int start, int forbidden, out int[] p)
             {
                 if (start == forbidden)
                     throw new ArgumentException("Стартовая вершина не может быть запрещенной");
 
-                long[,] c = new long[Size, Size];
 
-                for (int i = 0; i < Size; i++)
-                {
-                    for (int j = 0; j < Size; j++)
-                    {
-                        if (array[i, j] == 0 || i == j)
-                            c[i, j] = long.MaxValue;
-                        else
-                            c[i, j] = array[i, j];
-                    }
-                }
-
-                long[] d = new long[Size];
+                double[] d = new double[Size];
                 p = new int[Size];
                 bool[] visited = new bool[Size];
 
@@ -294,7 +187,7 @@ namespace Example
 
                 for (int i = 0; i < Size; i++)
                 {
-                    long min = long.MaxValue;
+                    double min = double.MaxValue;
                     int v = -1;
 
                     for (int j = 0; j < Size; j++)
@@ -318,9 +211,9 @@ namespace Example
                         if (u == forbidden)
                             continue;
 
-                        if (c[v, u] != long.MaxValue)
+                        if (GetDistance(v, u) != double.MaxValue && array[v, u] != 0)
                         {
-                            long distance = d[v] + c[v, u];
+                            double distance = d[v] + GetDistance(v, u);
 
                             if (distance < d[u])
                             {
@@ -350,231 +243,37 @@ namespace Example
 
                 int n = int.Parse(firstLine);
                 int[,] a = new int[n, n];
+                int[,] cords = new int[n, 2];
+                string[] cities = new string[n];
+
+                for (int i = 0; i < n; ++i)
+                {
+                    string line = file.ReadLine();
+                    string[] mas = line.Split(new[] { ' ', ',', '.', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    cities[i] = mas[0];
+                    cords[i, 0] = int.Parse(mas[1]);
+                    cords[i, 1] = int.Parse(mas[2]);
+
+                }
 
                 for (int i = 0; i < n; i++)
                 {
                     string line = file.ReadLine();
                     if (line == null)
                         throw new InvalidDataException("Недостаточно строк в файле");
-                        
 
-                    string[] mas = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    string[] mas = line.Split(new[] { ' ', ',', '.', ';' }, StringSplitOptions.RemoveEmptyEntries);
                     for (int j = 0; j < n; j++)
                     {
                         a[i, j] = int.Parse(mas[j]);
                     }
                 }
-                graph = new Node(a);
+                graph = new Node(a, cords, cities);
             }
         }
-        public void PrintIncomingVertices(int v)
-        {
-            if (v < 0 || v >= graph.Size)
-                throw new ArgumentOutOfRangeException(nameof(v));
+        
 
-            List<int> vertices = graph.GetIncomingVertices(v);
-
-            Console.Write("В вершину {0} входят вершины: ", v);
-
-            if (vertices.Count == 0)
-            {
-                Console.WriteLine("таких вершин нет");
-                return;
-            }
-
-            foreach (int vertex in vertices)
-            {
-                Console.Write(vertex + " ");
-            }
-
-            Console.WriteLine();
-        }
-
-        public void Dfs(int v)
-        {
-            if (v < 0 || v >= graph.Size)
-                throw new ArgumentOutOfRangeException(nameof(v));
-
-            graph.NovSet();
-            graph.Dfs(v);
-            Console.WriteLine();
-        }
-
-        public void Bfs(int v)
-        {
-            if (v < 0 || v >= graph.Size)
-                throw new ArgumentOutOfRangeException(nameof(v));
-
-            graph.NovSet();
-            graph.Bfs(v);
-            Console.WriteLine();
-        }
-
-        public void Dijkstra(int v)
-        {
-            if (v < 0 || v >= graph.Size)
-                throw new ArgumentOutOfRangeException(nameof(v));
-
-            graph.NovSet();
-            int[] p;
-            long[] d = graph.Dijkstra(v, out p);
-
-            Console.WriteLine("Кратчайшие пути от вершины {0}:", v);
-            for (int i = 0; i < graph.Size; i++)
-            {
-                if (i != v)
-                {
-                    Console.Write("  до вершины {0} длина = {1}, путь: ", i, d[i] == long.MaxValue ? "∞" : d[i].ToString());
-                    if (d[i] != long.MaxValue)
-                    {
-                        Stack<int> items = new Stack<int>();
-                        graph.WayDijkstra(v, i, p, ref items);
-                        while (items.Count > 0)
-                        {
-                            Console.Write("{0} ", items.Pop());
-                        }
-                    }
-                    else
-                    {
-                        Console.Write("пути не существует");
-                    }
-                    Console.WriteLine();
-                }
-            }
-        }
-
-        public void Floyd()
-        {
-            int[,] p;
-            long[,] a = graph.Floyd(out p);
-
-            for (int i = 0; i < graph.Size; i++)
-            {
-                for (int j = 0; j < graph.Size; j++)
-                {
-                    if (i != j)
-                    {
-                        if (a[i, j] == long.MaxValue)
-                        {
-                            Console.WriteLine("Пути из вершины {0} в вершину {1} не существует", i, j);
-                        }
-                        else
-                        {
-                            Console.Write("Кратчайший путь из {0} в {1} длина = {2}, путь: ", i, j, a[i, j]);
-                            Queue<int> items = new Queue<int>();
-                            items.Enqueue(i);
-                            graph.WayFloyd(i, j, p, ref items);
-                            items.Enqueue(j);
-
-                            while (items.Count > 0)
-                            {
-                                Console.Write("{0} ", items.Dequeue());
-                            }
-                            Console.WriteLine();
-                        }
-                    }
-                }
-            }
-        }
-        public void EulerPath(int start)
-        {
-            int n = graph.Size;
-
-            if (start < 0 || start >= n)
-                throw new ArgumentOutOfRangeException(nameof(start));
-
-            int[] inDegree = new int[n];
-            int[] outDegree = new int[n];
-
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    if (graph[i, j] != 0)
-                    {
-                        outDegree[i]++;
-                        inDegree[j]++;
-                    }
-                }
-            }
-
-            int startCount = 0;
-            int endCount = 0;
-
-            int requiredStart = -1;
-
-            for (int i = 0; i < n; i++)
-            {
-                if (outDegree[i] - inDegree[i] == 1)
-                {
-                    requiredStart = i;
-                    startCount++;
-                }
-                else if (inDegree[i] - outDegree[i] == 1)
-                {
-                    endCount++;
-                }
-                else if (inDegree[i] != outDegree[i])
-                {
-                    Console.WriteLine("Эйлеров путь не существует");
-                    return;
-                }
-            }
-
-            if (!((startCount == 1 && endCount == 1) ||
-                (startCount == 0 && endCount == 0)))
-            {
-                Console.WriteLine("Эйлеров путь не существует");
-                return;
-            }
-
-            if (startCount == 1 && start != requiredStart)
-            {
-                Console.WriteLine(
-                    "Эйлеров путь должен начинаться с вершины {0}",
-                    requiredStart
-                );
-                return;
-            }
-
-            int[,] a = new int[n, n];
-
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    a[i, j] = graph[i, j];
-                }
-            }
-
-            Stack<int> c = new Stack<int>();
-
-            graph.SearchEuler(start, ref a, ref c);
-
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    if (a[i, j] != 0)
-                    {
-                        Console.WriteLine("Эйлеров путь не существует");
-                        return;
-                    }
-                }
-            }
-
-            Console.WriteLine(
-                "Эйлеров путь из вершины {0}:",
-                start
-            );
-
-            while (c.Count != 0)
-            {
-                Console.Write("{0} ", c.Pop());
-            }
-
-            Console.WriteLine();
-        }
         public void DijkstraWithoutVertex(int start, int end, int forbidden)
         {
             if (start < 0 || start >= graph.Size)
@@ -588,19 +287,19 @@ namespace Example
 
             int[] p;
 
-            long[] d = graph.DijkstraWithoutVertex(
+            double[] d = graph.DijkstraWithoutVertex(
                 start,
                 forbidden,
                 out p
             );
 
-            if (d[end] == long.MaxValue)
+            if (d[end] == double.MaxValue)
             {
                 Console.WriteLine(
                     "Путь из {0} в {1}, не проходящий через {2}, не существует",
-                    start,
-                    end,
-                    forbidden
+                    graph.cities[start],
+                    graph.cities[end],
+                    graph.cities[forbidden]
                 );
 
                 return;
@@ -608,12 +307,11 @@ namespace Example
 
             Console.WriteLine(
                 "Кратчайший путь из {0} в {1}, не проходящий через {2}:",
-                start,
-                end,
-                forbidden
+                    graph.cities[start],
+                    graph.cities[end],
+                    graph.cities[forbidden]
             );
 
-            Console.WriteLine("Длина пути: {0}", d[end]);
 
             Stack<int> items = new Stack<int>();
 
@@ -621,7 +319,7 @@ namespace Example
 
             while (items.Count > 0)
             {
-                Console.Write("{0} ", items.Pop());
+                Console.Write("{0} ", graph.cities[items.Pop()]);
             }
 
             Console.WriteLine();
@@ -632,9 +330,9 @@ namespace Example
     {
         static void Main(string[] args)
         {
-            Graph graph = new Graph("graph.txt");
-            graph.PrintIncomingVertices(2);
-            
+            Graph graph = new Graph("C:\\Users\\contest\\source\\repos\\ConsoleApp6\\graph.txt");
+            graph.DijkstraWithoutVertex(0, 3, 1);
+
         }
     }
 }
