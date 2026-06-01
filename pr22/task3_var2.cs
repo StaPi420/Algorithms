@@ -8,16 +8,16 @@ namespace Example
     {
         private class Node
         {
-            private int[,] array;
+            private double[,] array;
             private int[,] coords;
             public string[] cities;
 
-            public int this[int i, int j]
+            public double this[int i, int j]
             {
                 get { return array[i, j]; }
                 set { array[i, j] = value; }
             }
-            public Node(int[,] a, int[,] cords, string[] cities)
+            public Node(double[,] a, int[,] cords, string[] cities)
             {
                 array = a;
                 coords = cords;
@@ -45,112 +45,7 @@ namespace Example
                 }
             }
 
-            // Обход в глубину (DFS)
-            public void Dfs(int v)
-            {
-                Console.Write("{0} ", v);
-                nov[v] = false;
-
-                for (int u = 0; u < Size; u++)
-                {
-                    if (array[v, u] != 0 && nov[u])
-                    {
-                        Dfs(u);
-                    }
-                }
-            }
-
-            // Обход в ширину (BFS)
-            public void Bfs(int v)
-            {
-                Queue<int> q = new Queue<int>();
-                q.Enqueue(v);
-                nov[v] = false;
-
-                while (q.Count > 0)
-                {
-                    v = q.Dequeue();
-                    Console.Write("{0} ", v);
-
-                    for (int u = 0; u < Size; u++)
-                    {
-                        if (array[v, u] != 0 && nov[u])
-                        {
-                            q.Enqueue(u);
-                            nov[u] = false;
-                        }
-                    }
-                }
-            }
-
-            // Алгоритм Дейкстры
-            public long[] Dijkstra(int v, out int[] p)
-            {
-                nov[v] = false;
-
-                // Матрица весов c
-                long[,] c = new long[Size, Size];
-                for (int i = 0; i < Size; i++)
-                {
-                    for (int u = 0; u < Size; u++)
-                    {
-                        if (array[i, u] == 0 || i == u)
-                        {
-                            c[i, u] = long.MaxValue;
-                        }
-                        else
-                        {
-                            c[i, u] = array[i, u];
-                        }
-                    }
-                }
-
-                long[] d = new long[Size];
-                p = new int[Size];
-
-                for (int u = 0; u < Size; u++)
-                {
-                    if (u != v)
-                    {
-                        d[u] = c[v, u];
-                        p[u] = v;
-                    }
-                }
-                d[v] = 0;
-
-                for (int i = 0; i < Size - 1; i++)
-                {
-                    long min = long.MaxValue;
-                    int w = -1;
-
-                    for (int u = 0; u < Size; u++)
-                    {
-                        if (nov[u] && min > d[u])
-                        {
-                            min = d[u];
-                            w = u;
-                        }
-                    }
-
-                    if (w == -1) break;
-
-                    nov[w] = false;
-
-                    for (int u = 0; u < Size; u++)
-                    {
-                        if (c[w, u] == long.MaxValue) continue;
-                        long distance = d[w] + c[w, u];
-                        if (nov[u] && d[u] > distance)
-                        {
-                            d[u] = distance;
-                            p[u] = w;
-                        }
-                    }
-                }
-
-                return d;
-            }
-
+           
             // Восстановление пути для Дейкстры
             public void WayDijkstra(int a, int b, int[] p, ref Stack<int> items)
             {
@@ -242,7 +137,7 @@ namespace Example
                     throw new InvalidDataException("Файл пуст");
 
                 int n = int.Parse(firstLine);
-                int[,] a = new int[n, n];
+                double[,] a = new double[n, n];
                 int[,] cords = new int[n, 2];
                 string[] cities = new string[n];
 
@@ -266,7 +161,15 @@ namespace Example
                     string[] mas = line.Split(new[] { ' ', ',', '.', ';' }, StringSplitOptions.RemoveEmptyEntries);
                     for (int j = 0; j < n; j++)
                     {
-                        a[i, j] = int.Parse(mas[j]);
+                        int value = int.Parse(mas[j]);
+                        if (value == 1)
+                        {
+                            a[i, j] = Math.Sqrt((cords[i, 0] - cords[j, 0]) * (cords[i, 0] - cords[j, 0]) + (cords[i, 1] - cords[j, 1]) * (cords[i, 1] - cords[j, 1]));
+                        }
+                        else
+                        {
+                            a[i, j] = 0;
+                        }
                     }
                 }
                 graph = new Node(a, cords, cities);
@@ -284,6 +187,15 @@ namespace Example
 
             if (forbidden < 0 || forbidden >= graph.Size)
                 throw new ArgumentOutOfRangeException(nameof(forbidden));
+
+            for (int i = 0; i < graph.Size; ++i)
+            {
+                for (int j = 0; j < graph.Size; ++j)
+                {
+                    Console.Write($"{graph[i, j]:F2} ");
+                }
+                Console.WriteLine();
+            }
 
             int[] p;
 
@@ -330,7 +242,7 @@ namespace Example
     {
         static void Main(string[] args)
         {
-            Graph graph = new Graph("C:\\Users\\contest\\source\\repos\\ConsoleApp6\\graph.txt");
+            Graph graph = new Graph("C:\\Users\\kuram\\.vscode\\csproj\\ConsoleApp2\\input.txt");
             graph.DijkstraWithoutVertex(0, 3, 1);
 
         }
