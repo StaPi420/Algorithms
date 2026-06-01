@@ -183,6 +183,28 @@ public class AVLTree
         Collect(node.Left, list);
         Collect(node.Right, list);
     }
+    public void Print(Node node, string indent = "", bool last = true)
+    {
+        if (node == null) return;
+
+        Console.Write(indent);
+
+        if (last)
+        {
+            Console.Write("└─");
+            indent += "  ";
+        }
+        else
+        {
+            Console.Write("├─");
+            indent += "| ";
+        }
+
+        Console.WriteLine($"{node.Key} (h={node.Height})");
+
+        Print(node.Left, indent, false);
+        Print(node.Right, indent, true);
+    }
 }
 
 class Program
@@ -202,12 +224,20 @@ class Program
         List<int> nodes = new List<int>();
         tree.Collect(tree.Root, nodes);
 
+        if (tree.IsPerfectlyBalanced(tree.Root))
+        {
+            Console.WriteLine("Дерево уже идеально сбалансировано");
+            return;
+        }
+
         foreach (var value in nodes)
         {
             AVLTree tempTree = new AVLTree();
             tempTree.Root = tree.Clone(tree.Root);
 
             tempTree.Root = tempTree.Remove(tempTree.Root, value);
+
+            tempTree.Print(tempTree.Root);
 
             if (tempTree.IsPerfectlyBalanced(tempTree.Root))
             {
