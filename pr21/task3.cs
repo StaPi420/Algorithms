@@ -17,23 +17,24 @@ public class AVLTree
             height = 1;
         }
 
-        public int Height{
+        public int Height
+        {
             get
-            { 
+            {
                 return height;
             }
             set
             {
                 height = value;
             }
-    
+
         }
         public int BalanceFactor
         {
             get
             {
-                return (this != null) ? 
-                this.getLeftHeight() - this.getRightHeight() : 
+                return (this != null) ?
+                this.getLeftHeight() - this.getRightHeight() :
                 0;
             }
         }
@@ -211,7 +212,7 @@ class Program
 {
     static void Main()
     {
-        var numbers = File.ReadAllText("C:\\Users\\kuram\\.vscode\\csproj\\ConsoleApp2\\input.txt")
+        var numbers = File.ReadAllText("C:\\Users\\contest\\source\\repos\\ConsoleApp1\\ConsoleApp1\\input.txt")
                           .Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                           .Select(int.Parse)
                           .ToList();
@@ -223,6 +224,7 @@ class Program
 
         List<int> nodes = new List<int>();
         tree.Collect(tree.Root, nodes);
+        tree.Print(tree.Root);
 
         if (tree.IsPerfectlyBalanced(tree.Root))
         {
