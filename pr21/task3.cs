@@ -206,6 +206,24 @@ public class AVLTree
         Print(node.Left, indent, false);
         Print(node.Right, indent, true);
     }
+    public void CollectDeepestLeaves(Node node, int depth, int maxDepth, List<Node> leaves)
+    {
+        if (node == null)
+        {
+            return;
+        }
+
+        if (node.Left == null && node.Right == null)
+        {
+            if (depth == maxDepth)
+            {
+                leaves.Add(node);
+            }
+            return;
+        }
+        CollectDeepestLeaves(node.Right, depth + 1, maxDepth, leaves);
+        CollectDeepestLeaves(node.Left, depth + 1, maxDepth, leaves);
+    }
 }
 
 class Program
@@ -232,22 +250,23 @@ class Program
             return;
         }
 
-        foreach (var value in nodes)
+        List<AVLTree.Node> leaves = new List<AVLTree.Node>();
+        tree.CollectDeepestLeaves(tree.Root, 1, tree.Root.Height, leaves);
+
+        if (leaves.Count == 1)
         {
-            AVLTree tempTree = new AVLTree();
-            tempTree.Root = tree.Clone(tree.Root);
-
-            tempTree.Root = tempTree.Remove(tempTree.Root, value);
-
-            tempTree.Print(tempTree.Root);
-
-            if (tempTree.IsPerfectlyBalanced(tempTree.Root))
+            tree.Remove(tree.Root, leaves[0].Key);
+            if (tree.IsPerfectlyBalanced(tree.Root))
             {
-                Console.WriteLine("Можно удалить узел: " + value);
-                return;
+                Console.WriteLine("Требуется удалить узел: {0}", leaves[0].Key);
             }
+            else
+            {
+                Console.WriteLine("Нет такого узла");
+            }
+            tree.Print(tree.Root);
         }
-
-        Console.WriteLine("Нет такого узла");
+        else
+            Console.WriteLine("Нет такого узла");
     }
 }
