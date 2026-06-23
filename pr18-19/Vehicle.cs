@@ -1,44 +1,47 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace ConsoleApp2
 {
-    abstract public class Vehicle : IComparable<Vehicle>
+    [DataContract]
+    [KnownType(typeof(Car))]
+    [KnownType(typeof(Motorcycle))]
+    [KnownType(typeof(Truck))]
+    public abstract class Vehicle : IComparable<Vehicle>
     {
-        protected String brand, carNumber;
-        protected int speed, liftingCapacity;
-        public Vehicle()
-        {
+        [DataMember]
+        protected string brand;
 
-        }
-        public Vehicle(Vehicle other)
-        {
-            this.brand = other.brand;
-            this.carNumber = other.carNumber;
-            this.speed = other.speed;
-            this.liftingCapacity = other.liftingCapacity;
-        }
-        public Vehicle(String brand, String carNumber, int speed, int liftingCapacity)
+        [DataMember]
+        protected string carNumber;
+
+        [DataMember]
+        protected int speed;
+
+        [DataMember]
+        protected int liftingCapacity;
+
+        public Vehicle() { }
+
+        public Vehicle(string brand, string carNumber, int speed, int liftingCapacity)
         {
             this.brand = brand;
             this.carNumber = carNumber;
             this.speed = speed;
             this.liftingCapacity = liftingCapacity;
         }
-        public abstract int LiftingCapacity{
-            get;
-        }
-        public void Show()
-        {
-            Console.WriteLine($"Марка: {brand}\nНомер: {carNumber}\nСкорость: {speed}\nГрузоподъёмность:{LiftingCapacity}");
-        }
+
+        public abstract int LiftingCapacity { get; }
+
         public int CompareTo(Vehicle other)
         {
             if (other == null) return 1;
-            return this.LiftingCapacity.CompareTo(other.LiftingCapacity);
+            return LiftingCapacity.CompareTo(other.LiftingCapacity);
+        }
+
+        public override string ToString()
+        {
+            return $"Brand: {brand}, Car Number: {carNumber}, Speed: {speed}, Lifting Capacity: {liftingCapacity}";
         }
     }
 }
