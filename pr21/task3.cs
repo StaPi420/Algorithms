@@ -9,12 +9,13 @@ public class AVLTree
     {
         public int Key;
         public Node Left, Right;
-        public int height;
+        public int height, descendantsCount;
 
         public Node(int key)
         {
             Key = key;
             height = 1;
+            descendantsCount = 1;
         }
 
         public int Height
@@ -28,6 +29,17 @@ public class AVLTree
                 height = value;
             }
 
+        }
+        public int DescendantsCount
+        {
+            get
+            {
+                return descendantsCount;
+            }
+            set
+            {
+                descendantsCount = value;
+            }
         }
         public int BalanceFactor
         {
@@ -53,6 +65,11 @@ public class AVLTree
     void UpdateHeight(Node n)
     {
         n.Height = Math.Max(n.getLeftHeight(), n.getRightHeight()) + 1;
+        n.descendantsCount = 1;
+        if (n.Left != null)
+            n.descendantsCount += n.Left.descendantsCount;
+        if (n.Right != null)
+            n.descendantsCount += n.Right.descendantsCount;
     }
 
     Node RotateRight(Node y)
@@ -102,6 +119,14 @@ public class AVLTree
         }
 
         return node;
+    }
+    public int GetRightDescendantsCount(Node node)
+    {
+        return (node.Right != null) ? node.Right.descendantsCount : 0;
+    }
+    public int GetLeftDescendantsCount(Node node)
+    {
+        return (node.Left != null) ? node.Left.descendantsCount : 0;
     }
 
     public Node Insert(Node node, int key)
@@ -159,11 +184,13 @@ public class AVLTree
     {
         if (node == null) return true;
 
-        int diff = Math.Abs(node.getLeftHeight() - node.getRightHeight());
-        if (diff > 0) return false;
+        int diff = Math.Abs(GetRightDescendantsCount(node) - GetLeftDescendantsCount(node));
+
+        if (diff > 1)
+            return false;
 
         return IsPerfectlyBalanced(node.Left) &&
-               IsPerfectlyBalanced(node.Right);
+            IsPerfectlyBalanced(node.Right);
     }
 
     public Node Clone(Node node)
@@ -206,31 +233,39 @@ public class AVLTree
         Print(node.Left, indent, false);
         Print(node.Right, indent, true);
     }
-    public void CollectDeepestLeaves(Node node, int depth, int maxDepth, List<Node> leaves)
+    public Node FindDeepestInHeavySubtree(Node node)
     {
         if (node == null)
+            return null;
+
+        while (node.Left != null || node.Right != null)
         {
-            return;
+            int lh = GetLeftDescendantsCount(node);
+            int rh = GetRightDescendantsCount(node);
+
+            if (lh > rh)
+                node = node.Left;
+            else if (rh > lh)
+                node = node.Right;
+            else
+            {
+                if (node.Right != null)
+                    node = node.Right;
+                else
+                    node = node.Left;
+            }
         }
 
-        if (node.Left == null && node.Right == null)
-        {
-            if (depth == maxDepth)
-            {
-                leaves.Add(node);
-            }
-            return;
-        }
-        CollectDeepestLeaves(node.Right, depth + 1, maxDepth, leaves);
-        CollectDeepestLeaves(node.Left, depth + 1, maxDepth, leaves);
+        return node;
     }
+
 }
 
 class Program
 {
     static void Main()
     {
-        var numbers = File.ReadAllText("C:\\Users\\contest\\source\\repos\\ConsoleApp1\\ConsoleApp1\\input.txt")
+        var numbers = File.ReadAllText("C:\\Users\\kuram\\.vscode\\csproj\\ConsoleApp2\\input.txt")
                           .Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                           .Select(int.Parse)
                           .ToList();
@@ -250,23 +285,18 @@ class Program
             return;
         }
 
-        List<AVLTree.Node> leaves = new List<AVLTree.Node>();
-        tree.CollectDeepestLeaves(tree.Root, 1, tree.Root.Height, leaves);
+        var candidate = tree.FindDeepestInHeavySubtree(tree.Root);
 
-        if (leaves.Count == 1)
+        tree.Root = tree.Remove(tree.Root, candidate.Key);
+
+        if (tree.IsPerfectlyBalanced(tree.Root))
         {
-            tree.Remove(tree.Root, leaves[0].Key);
-            if (tree.IsPerfectlyBalanced(tree.Root))
-            {
-                Console.WriteLine("Требуется удалить узел: {0}", leaves[0].Key);
-            }
-            else
-            {
-                Console.WriteLine("Нет такого узла");
-            }
+            Console.WriteLine("Требуется удалить узел: {0}", candidate.Key);
             tree.Print(tree.Root);
         }
         else
+        {
             Console.WriteLine("Нет такого узла");
+        }
     }
 }
